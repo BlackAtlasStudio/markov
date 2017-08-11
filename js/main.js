@@ -20,36 +20,43 @@ $("#gen").click(function() {
   console.log("Generating Matrix");
 
   //Create empty matrix
-  mat = new Array(27);
-  for (var i = 0; i < 27; i++) {
-    mat[i] = new Array(27);
-    for (var j = 0; j < 27; j++) {
+  mat = new Array(28);
+  for (var i = 0; i < mat.length; i++) {
+    mat[i] = new Array(28);
+    for (var j = 0; j < mat[i].length; j++) {
       mat[i][j] = 0;
     }
     //mat[i][26] = 1;
   }
 
-  //Iterate through data counting numbers
-  var data = input.value.toLowerCase();
-  for (var i = 0; i < data.length-1; i++) {
-    var c = getCharCode(i);
-    var cn = getCharCode(i+1);
+  //Split input using whitespace
+  var data = input.value.toLowerCase().match(/\S+/g);
 
-    if (c != 26) {
-      mat[c][cn]++;
+  //Counter on each letter including start state and end state
+  for (var i = 0; i < data.length; i++) {
+    var curState = 0; //Begin at start state
+    for (var j = 0; j < data[i].length; j++) {
+      var next = data[i].charCodeAt(j) - 96;
+
+      if (next > 0 && next < 27) {
+        mat[curState][next]++;
+        curState = next;
+      }
     }
+    //Add to end state
+    mat[curState][27]++;
   }
 
   //Calculate weighted percentages for each letter
-  for (var i = 0; i < 27; i++) {
+  for (var i = 0; i < mat.length; i++) {
     //Get totals
     var total = 0;
-    for (var j = 0; j < 27; j++) {
+    for (var j = 0; j < mat.length; j++) {
       total += mat[i][j];
     }
 
     //Change count to weights
-    for (var j = 0; j < 27; j++) {
+    for (var j = 0; j < mat.length; j++) {
       if (mat[i][j] == 0) {
         mat[i][j] = 0;
       } else {
@@ -86,8 +93,11 @@ $("#chain").click(function() {
   //Pick random starting letter and find chain
   var names = new Array(5);
 
-  for (var i = 0; i < 5; i++) {
+  for (var i = 0; i < 10; i++) {
     var name = GenerateChain();
+    while (name.length < 4 || name.length > 12) {
+      name = GenerateChain();
+    }
     if (i != 0)
       output.value += "\n";
     output.value += name.charAt(0).toUpperCase() + name.slice(1);
@@ -96,15 +106,25 @@ $("#chain").click(function() {
   function GenerateChain() {
     var name = "";
 
-    var curChar = String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+    var curChar = GetNextState(0);
     console.log("Starting character", curChar);
 
-    while (name.length < 10) {
-      name += curChar;
-      curChar = String.fromCharCode(Math.floor(Math.random() * 26) + 97);
-
+    while (curChar != 27) {
+      name += String.fromCharCode(curChar + 96);
+      curChar = GetNextState(curChar);
     }
 
     return name;
+  }
+
+  function GetNextState(state) {
+    var r = Math.random();
+    for (var i = 0; i < 28; i++) {
+      r -= mat[state][i];
+      if (r <= 0) {
+        return i;
+      }
+    }
+    return 28;
   }
 })
