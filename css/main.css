@@ -54,6 +54,11 @@ body {
   border-radius: 3px;
 }
 
+.button {
+  background-color: #fff;
+  -webkit-user-select: none;
+}
+
 .status-failed {
   background-color: #e00;
 }

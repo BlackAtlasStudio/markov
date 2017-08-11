@@ -3,6 +3,16 @@ let input;
 
 var mat;
 
+// EXAMPLE INPUTS
+let spaceNames = "kaz kan kel kelp kern kit \
+zap zan zel zert tal tar tay tai yan y lan let \
+lir liz ner nit nip nil nz nan raz pal pan xan \
+xit xi wx wx";
+let pirateNames = "ar black beard grey brown arsty \
+powder pirate";
+let sithNames = "Vader Malak Sideous Tyranus Bane \
+Maul Tenebrous";
+
 $(document).ready(() => {
   output = document.getElementById("output");
   input = document.getElementById("input");
@@ -10,9 +20,26 @@ $(document).ready(() => {
   $("#status").addClass("status-failed");
 });
 
-$("#input").focus(() => {
+$("#spaceName").click(() => {
+  input.value = spaceNames;
+  failedMatrix();
+})
+$("#pirateNames").click(() => {
+  input.value = pirateNames;
+  failedMatrix();
+})
+$("#sithNames").click(() => {
+  input.value = sithNames;
+  failedMatrix();
+})
+
+function failedMatrix () {
   $("#status").addClass("status-failed");
   $("#status").removeClass("status-succeed");
+}
+
+$("#input").focus(() => {
+  failedMatrix();
 })
 
 $("#gen").click(function() {
@@ -104,17 +131,17 @@ $("#chain").click(function() {
   }
 
   function GenerateChain() {
-    var name = "";
+    var chain = "";
 
-    var curChar = GetNextState(0);
-    console.log("Starting character", curChar);
+    var curState = GetNextState(0);
+    console.log("Starting character", curState);
 
-    while (curChar != 27) {
-      name += String.fromCharCode(curChar + 96);
-      curChar = GetNextState(curChar);
+    while (curState != 27) {
+      chain += String.fromCharCode(curState + 96);
+      curState = GetNextState(curState);
     }
 
-    return name;
+    return chain;
   }
 
   function GetNextState(state) {
